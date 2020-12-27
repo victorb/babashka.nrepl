@@ -10,6 +10,9 @@
 (defn stop-server! [{:keys [socket]}]
   (.close ^ServerSocket socket))
 
+(defn get-local-port [{:keys [socket]}]
+  (.getLocalPort ^ServerSocket socket))
+
 (defn parse-opt [host+port]
   (let [parts (string/split host+port #":")
         [host port] (if (= 1 (count parts))

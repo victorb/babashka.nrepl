@@ -14,8 +14,8 @@
 
 (set! *warn-on-reflection* true)
 
-;; Test on a non standard port to minimize REPL interference
-(def nrepl-test-port 54345)
+;; Use 0 as port so OS automatically assigns open port for us
+(def nrepl-test-port 0)
 
 (def dynvar (sci/new-dynamic-var '*x* 10))
 (def reflection-var (sci/new-dynamic-var '*warn-on-reflection* false))
@@ -337,8 +337,9 @@
                   :debug-send false
                   :describe {"versions" {"babashka" "0.0.1"}}
                   :thread-bind [reflection-var]}))
-        (test-utils/wait-for-port "localhost" nrepl-test-port)
-        (nrepl-test nrepl-test-port)
+        (let [used-port (server/get-local-port @service)]
+          (test-utils/wait-for-port "localhost" used-port)
+          (nrepl-test used-port))
         (finally
           (server/stop-server! @service))))))
 
